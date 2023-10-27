@@ -9,6 +9,8 @@ public interface TipoIncidenciaService {
 
     TipoIncidencia obtenerTipoIncidenciaPorId(Integer idTipoInci);
 
+    TipoIncidencia obtenerTipoInciPorNomTipoInci(String nombTipoInci);
+
     List<TipoIncidencia> obtenerTodosLosTiposIncidencias();
 
     TipoIncidencia actualizarTipoIncidencia(TipoIncidencia tipoIncidencia);

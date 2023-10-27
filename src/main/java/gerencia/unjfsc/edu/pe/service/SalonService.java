@@ -8,6 +8,7 @@ public interface SalonService {
     Salon crearSalon(Salon salon);
 
     Salon obtenerSalonPorId(Integer idSalon);
+    Salon obtenerSalonPorNombre(String nombSalon);
 
     List<Salon> obtenerTodosLosSalones();
 

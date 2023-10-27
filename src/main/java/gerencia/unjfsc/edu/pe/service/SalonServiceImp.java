@@ -26,6 +26,11 @@ public class SalonServiceImp implements SalonService {
     }
 
     @Override
+    public Salon obtenerSalonPorNombre(String nombSalon) {
+        return salonRepository.findByNombSalon(nombSalon);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Salon> obtenerTodosLosSalones() {
         return salonRepository.findAll();

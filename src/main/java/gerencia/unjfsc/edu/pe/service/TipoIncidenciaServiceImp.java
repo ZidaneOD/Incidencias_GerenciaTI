@@ -26,6 +26,11 @@ public class TipoIncidenciaServiceImp implements TipoIncidenciaService {
     }
 
     @Override
+    public TipoIncidencia obtenerTipoInciPorNomTipoInci(String nombTipoInci) {
+        return tipoIncideciaRepository.findByNombTipoInci(nombTipoInci);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<TipoIncidencia> obtenerTodosLosTiposIncidencias() {
         return tipoIncideciaRepository.findAll();
