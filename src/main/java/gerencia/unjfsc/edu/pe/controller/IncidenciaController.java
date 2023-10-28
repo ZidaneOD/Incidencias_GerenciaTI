@@ -1,6 +1,9 @@
 package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.Incidencia;
+import gerencia.unjfsc.edu.pe.domain.Salon;
+import gerencia.unjfsc.edu.pe.domain.TipoIncidencia;
+import gerencia.unjfsc.edu.pe.domain.Usuario;
 import gerencia.unjfsc.edu.pe.service.IncidenciaService;
 import gerencia.unjfsc.edu.pe.service.SalonService;
 import gerencia.unjfsc.edu.pe.service.TipoIncidenciaService;
@@ -13,6 +16,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +45,14 @@ public class IncidenciaController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
+        Salon salonBuscado = salonService.obtenerSalonPorId(incidencia.getSalon().getIdSalon());
+        TipoIncidencia tipoIncidenciaBuscado = tipoIncidenciaService.obtenerTipoIncidenciaPorId(incidencia.getTipoIncidencia().getIdTipoInci());
+        Usuario usuarioBuscado = usuarioService.obtenerUsuarioPorId(incidencia.getUsuario().getIdUsua());
+
+        incidencia.setSalon(salonBuscado);
+        incidencia.setTipoIncidencia(tipoIncidenciaBuscado);
+        incidencia.setUsuario(usuarioBuscado);
+
         Incidencia incidenciaCreada = incidenciaService.crearIncidencia(incidencia);
         return ResponseEntity.status(HttpStatus.CREATED).body(incidenciaCreada);
     }
@@ -67,6 +82,16 @@ public class IncidenciaController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
+        Salon salonBuscado = salonService.obtenerSalonPorId(incidencia.getSalon().getIdSalon());
+        TipoIncidencia tipoIncidenciaBuscado = tipoIncidenciaService.obtenerTipoIncidenciaPorId(incidencia.getTipoIncidencia().getIdTipoInci());
+        Usuario usuarioBuscado = usuarioService.obtenerUsuarioPorId(incidencia.getUsuario().getIdUsua());
+
+        incidencia.setSalon(salonBuscado);
+        incidencia.setTipoIncidencia(tipoIncidenciaBuscado);
+        incidencia.setUsuario(usuarioBuscado);
+
+        incidencia.setFechaInci(new Date());
+
         Incidencia incidenciaActualizada = incidenciaService.actualizarIncidencia(incidencia);
         if (incidenciaActualizada != null) {
             return ResponseEntity.ok(incidenciaActualizada);

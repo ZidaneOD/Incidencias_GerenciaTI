@@ -1,5 +1,6 @@
 package gerencia.unjfsc.edu.pe.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -30,9 +31,15 @@ public class Incidencia {
     private String nombInci;
     @Column(name = "desc_inci",length = 200)
     private String descInci;
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Column(name = "fecha_inci")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(timezone = "GMT-5:00")
     private Date fechaInci;
+    @PrePersist
+    public void prePersist(){
+        fechaInci= new Date();
+    }
     @ManyToOne
     @JoinColumn(name = "id_usua")
     private Usuario usuario;
