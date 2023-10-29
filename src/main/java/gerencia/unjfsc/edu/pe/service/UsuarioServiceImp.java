@@ -42,4 +42,10 @@ public class UsuarioServiceImp implements UsuarioService {
     public void eliminarUsuario(Integer idUsua) {
         usuarioRepository.deleteById(idUsua);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario obtenerCredenciales(String nombUsua, String passUsua) {
+        return usuarioRepository.findByNombUsuaAndPassUsua(nombUsua, passUsua);
+    }
 }

@@ -15,4 +15,6 @@ public interface UsuarioService {
 
     void eliminarUsuario(Integer idUsua);
 
+    Usuario obtenerCredenciales(String nombUsua, String passUsua);
+
 }

@@ -20,10 +20,7 @@ public class Solucion {
     @ManyToOne
     @JoinColumn(name = "id_inci")
     private Incidencia incidencia;
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_segui")
-    private TipoSeguimiento tipoSeguimiento;
-    @Column(name = "desc_solu",length = 150)
+    @Column(name = "desc_solu", length = 150)
     private String descSolu;
     @Column(name = "costo_solu")
     private Double costoSolu;

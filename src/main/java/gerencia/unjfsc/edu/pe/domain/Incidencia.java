@@ -27,19 +27,24 @@ public class Incidencia {
     @ManyToOne
     @JoinColumn(name = "id_tipo_inci")
     private TipoIncidencia tipoIncidencia;
-    @Column(name = "nomb_inci",length = 100)
+    @Column(name = "nomb_inci", length = 100)
     private String nombInci;
-    @Column(name = "desc_inci",length = 200)
+    @Column(name = "desc_inci", length = 200)
     private String descInci;
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Column(name = "fecha_inci")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(timezone = "GMT-5:00")
+    @JsonFormat(timezone = "GMT+1:00")
     private Date fechaInci;
+
     @PrePersist
-    public void prePersist(){
-        fechaInci= new Date();
+    public void prePersist() {
+        fechaInci = new Date();
     }
+
+    @ManyToOne
+    @JoinColumn(name = "id_tipo_segui")
+    private TipoSeguimiento tipoSeguimiento;
     @ManyToOne
     @JoinColumn(name = "id_usua")
     private Usuario usuario;

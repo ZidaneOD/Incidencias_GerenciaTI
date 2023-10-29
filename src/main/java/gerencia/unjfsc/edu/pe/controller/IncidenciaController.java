@@ -1,9 +1,6 @@
 package gerencia.unjfsc.edu.pe.controller;
 
-import gerencia.unjfsc.edu.pe.domain.Incidencia;
-import gerencia.unjfsc.edu.pe.domain.Salon;
-import gerencia.unjfsc.edu.pe.domain.TipoIncidencia;
-import gerencia.unjfsc.edu.pe.domain.Usuario;
+import gerencia.unjfsc.edu.pe.domain.*;
 import gerencia.unjfsc.edu.pe.service.IncidenciaService;
 import gerencia.unjfsc.edu.pe.service.SalonService;
 import gerencia.unjfsc.edu.pe.service.TipoIncidenciaService;
@@ -52,6 +49,7 @@ public class IncidenciaController {
         incidencia.setSalon(salonBuscado);
         incidencia.setTipoIncidencia(tipoIncidenciaBuscado);
         incidencia.setUsuario(usuarioBuscado);
+        incidencia.setTipoSeguimiento(new TipoSeguimiento(1, "Registrada"));
 
         Incidencia incidenciaCreada = incidenciaService.crearIncidencia(incidencia);
         return ResponseEntity.status(HttpStatus.CREATED).body(incidenciaCreada);
@@ -91,7 +89,6 @@ public class IncidenciaController {
         incidencia.setUsuario(usuarioBuscado);
 
         incidencia.setFechaInci(new Date());
-
         Incidencia incidenciaActualizada = incidenciaService.actualizarIncidencia(incidencia);
         if (incidenciaActualizada != null) {
             return ResponseEntity.ok(incidenciaActualizada);
