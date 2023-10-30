@@ -18,8 +18,8 @@ public class LoginController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
-    public ResponseEntity<?> login(@RequestBody Usuario usuario, BindingResult bindingResult) {
+    @PostMapping
+    public ResponseEntity<?> login(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
             List<String> errores = bindingResult.getAllErrors()
@@ -28,8 +28,9 @@ public class LoginController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
-        if (usuarioService.obtenerCredenciales(usuario.getNombUsua(), usuario.getPassUsua()) != null) {
-            return ResponseEntity.ok().body("Logueado");
+        Usuario usuarioBuscado = usuarioService.obtenerCredenciales(usuario.getNombUsua(), usuario.getPassUsua());
+        if (usuarioBuscado != null) {
+            return ResponseEntity.ok().body(usuarioBuscado.getPersona().getRoles());
         } else {
             return ResponseEntity.ok().body("Denegado");
         }

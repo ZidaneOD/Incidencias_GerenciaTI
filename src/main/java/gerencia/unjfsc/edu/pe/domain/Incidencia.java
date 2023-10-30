@@ -34,7 +34,7 @@ public class Incidencia {
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @Column(name = "fecha_inci")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(timezone = "GMT+1:00")
+    @JsonFormat(timezone = "GMT-5:00")
     private Date fechaInci;
 
     @PrePersist
