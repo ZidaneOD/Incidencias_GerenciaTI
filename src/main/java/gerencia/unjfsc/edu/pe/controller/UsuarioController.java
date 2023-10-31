@@ -148,7 +148,6 @@ public class UsuarioController {
     @GetMapping("/reporte")
     public ResponseEntity<?> exportInvoice() {
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
-        /*Casteo*/
         List<RE_Usuario> reUsuarios = new ArrayList<>();
         for (Usuario usuario : usuarios) {
             String apellidos = usuario.getPersona().getAppaPers() + " " + usuario.getPersona().getApmaPers();
@@ -167,19 +166,13 @@ public class UsuarioController {
                     roles));
         }
         try {
-
-            // final File file = ResourceUtils.getFile("classpath:RP_Usuarios.jasper");
-            // final File filelogo = ResourceUtils.getFile("classpath:images/logoIndacochea.jpg");
-            // final File fileSpring = ResourceUtils.getFile("classpath:images/logoSpring.png");
             final File file = new File("RP_Usuarios.jasper");
             final File filelogo = new File("images/logoIndacochea.jpg");
             final File fileSpring = new File("images/logoSpring.png");
             final JasperReport report = (JasperReport) JRLoader.loadObject(file);
 
-
             java.io.FileInputStream IndacocheastreamForImage = new java.io.FileInputStream(filelogo);
             java.io.FileInputStream SpringstreamForImage = new java.io.FileInputStream(fileSpring);
-
 
             final HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("logoEmpresa", IndacocheastreamForImage);
