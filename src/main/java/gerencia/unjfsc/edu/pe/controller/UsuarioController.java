@@ -1,22 +1,25 @@
 package gerencia.unjfsc.edu.pe.controller;
 
-import gerencia.unjfsc.edu.pe.domain.Rol;
-import gerencia.unjfsc.edu.pe.domain.User;
-import gerencia.unjfsc.edu.pe.domain.Usuario;
-import gerencia.unjfsc.edu.pe.domain.Persona;
+import gerencia.unjfsc.edu.pe.domain.*;
+import gerencia.unjfsc.edu.pe.report.RE_Usuario;
 import gerencia.unjfsc.edu.pe.service.PersonaService;
 import gerencia.unjfsc.edu.pe.service.RolService;
 import gerencia.unjfsc.edu.pe.service.UsuarioService;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.util.ResourceUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -137,6 +140,60 @@ public class UsuarioController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
         personaService.eliminarPersona(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reporte")
+    public ResponseEntity<?> exportInvoice() {
+        List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
+        /*Casteo*/
+        List<RE_Usuario> reUsuarios = new ArrayList<>();
+        for (Usuario usuario : usuarios) {
+            String apellidos = usuario.getPersona().getAppaPers() + " " + usuario.getPersona().getApmaPers();
+            List<Rol> rols = usuario.getPersona().getRoles();
+            String roles = null;
+            for (Rol rol : rols) {
+                roles = " " + rol.getNombRol();
+
+            }
+            reUsuarios.add(new RE_Usuario(usuario.getIdUsua(),
+                    usuario.getNombUsua(),
+                    usuario.getPersona().getNombPers(),
+                    apellidos,
+                    usuario.getPersona().getDniPers(),
+                    usuario.getPersona().getEmailPers(),
+                    roles));
+        }
+
+
+        try {
+            final File file = ResourceUtils.getFile("classpath:RP_Usuarios.jasper");
+            final File filelogo = ResourceUtils.getFile("classpath:images/logoIndacochea.jpg");
+            final File fileSpring = ResourceUtils.getFile("classpath:images/logoSpring.png");
+            final JasperReport report = (JasperReport) JRLoader.loadObject(file);
+            java.io.FileInputStream IndacocheastreamForImage = new java.io.FileInputStream(filelogo);
+            java.io.FileInputStream SpringstreamForImage = new java.io.FileInputStream(fileSpring);
+            final HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("logoEmpresa", IndacocheastreamForImage);
+            parameters.put("logoSpring", SpringstreamForImage);
+            parameters.put("ds", new JRBeanCollectionDataSource(reUsuarios));
+
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            byte[] reporte = JasperExportManager.exportReportToPdf(jasperPrint);
+            String sdf = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+            StringBuilder stringBuilder = new StringBuilder().append("ReportePDF:");
+            ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                    .filename(stringBuilder.append(usuarios.size())
+                            .append("generateDate:").append(sdf).append(".pdf").toString())
+                    .build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDisposition(contentDisposition);
+            return ResponseEntity.ok().contentLength((long) reporte.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .headers(headers).body(new ByteArrayResource(reporte));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.noContent().build();
     }
 }
