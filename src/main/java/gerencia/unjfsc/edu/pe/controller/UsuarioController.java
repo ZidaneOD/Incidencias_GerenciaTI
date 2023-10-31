@@ -168,10 +168,12 @@ public class UsuarioController {
         }
         try {
 
-
+            // final File file = ResourceUtils.getFile("classpath:RP_Usuarios.jasper");
+            // final File filelogo = ResourceUtils.getFile("classpath:images/logoIndacochea.jpg");
+            // final File fileSpring = ResourceUtils.getFile("classpath:images/logoSpring.png");
             final File file = new File("RP_Usuarios.jasper");
-            final File filelogo = ResourceUtils.getFile("classpath:images/logoIndacochea.jpg");
-            final File fileSpring = ResourceUtils.getFile("classpath:images/logoSpring.png");
+            final File filelogo = new File("images/logoIndacochea.jpg");
+            final File fileSpring = new File("images/logoSpring.png");
             final JasperReport report = (JasperReport) JRLoader.loadObject(file);
 
 
