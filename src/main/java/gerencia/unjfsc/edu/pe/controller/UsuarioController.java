@@ -166,13 +166,17 @@ public class UsuarioController {
                     roles));
         }
         try {
-            final File file = new File("RP_Usuarios.jasper");
-            final File filelogo = new File("images/logoIndacochea.jpg");
-            final File fileSpring = new File("images/logoSpring.png");
+            //final File file = new File("RP_Usuarios.jasper");
+            //final File filelogo = new File("images/logoIndacochea.jpg");
+            //final File fileSpring = new File("images/logoSpring.png");
+            java.net.URL file = this.getClass().getClassLoader().getResource("RP_Usuarios.jasper");
+            java.net.URL filelogo = this.getClass().getClassLoader().getResource("images/logoIndacochea.jpg");
+            java.net.URL fileSpring = this.getClass().getClassLoader().getResource("images/logoSpring.png");
+
             final JasperReport report = (JasperReport) JRLoader.loadObject(file);
 
-            java.io.FileInputStream IndacocheastreamForImage = new java.io.FileInputStream(filelogo);
-            java.io.FileInputStream SpringstreamForImage = new java.io.FileInputStream(fileSpring);
+            java.io.InputStream IndacocheastreamForImage = filelogo.openStream();
+            java.io.InputStream SpringstreamForImage = fileSpring.openStream();
 
             final HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("logoEmpresa", IndacocheastreamForImage);
