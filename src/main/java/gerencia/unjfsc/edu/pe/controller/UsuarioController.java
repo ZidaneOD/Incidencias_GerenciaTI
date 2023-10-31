@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -164,15 +166,19 @@ public class UsuarioController {
                     usuario.getPersona().getEmailPers(),
                     roles));
         }
-
-
         try {
-            final File file = ResourceUtils.getFile("classpath:RP_Usuarios.jasper");
+
+
+            final File file = new File("RP_Usuarios.jasper");
             final File filelogo = ResourceUtils.getFile("classpath:images/logoIndacochea.jpg");
             final File fileSpring = ResourceUtils.getFile("classpath:images/logoSpring.png");
             final JasperReport report = (JasperReport) JRLoader.loadObject(file);
+
+
             java.io.FileInputStream IndacocheastreamForImage = new java.io.FileInputStream(filelogo);
             java.io.FileInputStream SpringstreamForImage = new java.io.FileInputStream(fileSpring);
+
+
             final HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("logoEmpresa", IndacocheastreamForImage);
             parameters.put("logoSpring", SpringstreamForImage);
