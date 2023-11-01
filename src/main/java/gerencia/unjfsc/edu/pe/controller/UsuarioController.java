@@ -12,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
-import org.springframework.util.ResourceUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -141,7 +137,8 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
-        personaService.eliminarPersona(id);
+        ;
+        personaService.eliminarPersona(usuarioService.obtenerUsuarioPorId(id).getPersona().getIdPers());
         return ResponseEntity.noContent().build();
     }
 
@@ -166,9 +163,6 @@ public class UsuarioController {
                     roles));
         }
         try {
-            //final File file = new File("RP_Usuarios.jasper");
-            //final File filelogo = new File("images/logoIndacochea.jpg");
-            //final File fileSpring = new File("images/logoSpring.png");
             java.net.URL file = this.getClass().getClassLoader().getResource("RP_Usuarios.jasper");
             java.net.URL filelogo = this.getClass().getClassLoader().getResource("images/logoIndacochea.jpg");
             java.net.URL fileSpring = this.getClass().getClassLoader().getResource("images/logoSpring.png");

@@ -1,5 +1,6 @@
 package gerencia.unjfsc.edu.pe.controller;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import gerencia.unjfsc.edu.pe.domain.Rol;
 import gerencia.unjfsc.edu.pe.service.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class RolController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> obtenerRol(@PathVariable Integer id) {
+
         Rol rol = rolService.obtenerRolPorId(id);
         if (rol != null) {
             return ResponseEntity.ok(rol);
