@@ -137,7 +137,6 @@ public class UsuarioController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
-        ;
         personaService.eliminarPersona(usuarioService.obtenerUsuarioPorId(id).getPersona().getIdPers());
         return ResponseEntity.noContent().build();
     }
