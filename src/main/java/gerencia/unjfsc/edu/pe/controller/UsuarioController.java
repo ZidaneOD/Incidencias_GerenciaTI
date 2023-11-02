@@ -1,7 +1,7 @@
 package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.*;
-import gerencia.unjfsc.edu.pe.report.RE_Usuario;
+import gerencia.unjfsc.edu.pe.report.REUsuario;
 import gerencia.unjfsc.edu.pe.service.PersonaService;
 import gerencia.unjfsc.edu.pe.service.RolService;
 import gerencia.unjfsc.edu.pe.service.UsuarioService;
@@ -144,7 +144,7 @@ public class UsuarioController {
     @GetMapping("/reporte")
     public ResponseEntity<?> exportInvoice() {
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
-        List<RE_Usuario> reUsuarios = new ArrayList<>();
+        List<REUsuario> reUsuarios = new ArrayList<>();
         for (Usuario usuario : usuarios) {
             String apellidos = usuario.getPersona().getAppaPers() + " " + usuario.getPersona().getApmaPers();
             List<Rol> rols = usuario.getPersona().getRoles();
@@ -153,7 +153,7 @@ public class UsuarioController {
                 roles = " " + rol.getNombRol();
 
             }
-            reUsuarios.add(new RE_Usuario(usuario.getIdUsua(),
+            reUsuarios.add(new REUsuario(usuario.getIdUsua(),
                     usuario.getNombUsua(),
                     usuario.getPersona().getNombPers(),
                     apellidos,

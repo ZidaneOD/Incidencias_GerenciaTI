@@ -17,7 +17,7 @@ public class TipoSeguimiento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_segui")
     private Integer idTipoSegui;
-    @Column(name = "nomb_tipo_segui",length = 100)
+    @Column(name = "nomb_tipo_segui", length = 100)
     private String nombTipoSegui;
     private static final long serialVersionUID = 1L;
 }
