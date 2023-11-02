@@ -30,7 +30,7 @@ public class LoginController {
         }
         Usuario usuarioBuscado = usuarioService.obtenerCredenciales(usuario.getNombUsua(), usuario.getPassUsua());
         if (usuarioBuscado != null) {
-            return ResponseEntity.ok().body(usuarioBuscado.getPersona().getRoles());
+            return ResponseEntity.ok().body(usuarioBuscado);
         } else {
             return ResponseEntity.ok().body("Denegado");
         }
