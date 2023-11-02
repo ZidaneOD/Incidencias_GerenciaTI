@@ -3,8 +3,11 @@ package gerencia.unjfsc.edu.pe.controller;
 import gerencia.unjfsc.edu.pe.domain.Incidencia;
 import gerencia.unjfsc.edu.pe.domain.Solucion;
 import gerencia.unjfsc.edu.pe.domain.TipoSeguimiento;
+import gerencia.unjfsc.edu.pe.domain.Usuario;
+import gerencia.unjfsc.edu.pe.report.RPSolucion;
 import gerencia.unjfsc.edu.pe.service.IncidenciaService;
 import gerencia.unjfsc.edu.pe.service.SolucionService;
+import gerencia.unjfsc.edu.pe.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -24,9 +27,11 @@ public class SolucionController {
 
     @Autowired
     private IncidenciaService incidenciaService;
+    @Autowired
+    private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<?> crearSolucion(@Valid @RequestBody Solucion solucion, BindingResult bindingResult) {
+    public ResponseEntity<?> crearSolucion(@Valid @RequestBody RPSolucion rpSolucion, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
             List<String> errores = bindingResult.getAllErrors()
@@ -35,9 +40,17 @@ public class SolucionController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
-        Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(solucion.getIncidencia().getIdInci());
+
+
+        Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(rpSolucion.getIdInci());
         incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
         incidenciaService.actualizarIncidencia(incidencia);
+
+        Usuario usuario = usuarioService.obtenerUsuarioPorId(rpSolucion.getIdUsua());
+
+        Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario);
+
+
         Solucion solucionCreada = solucionService.crearSolucion(solucion);
         return ResponseEntity.status(HttpStatus.CREATED).body(solucionCreada);
     }
