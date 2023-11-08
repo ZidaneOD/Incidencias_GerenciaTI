@@ -71,4 +71,10 @@ public class SalonController {
         salonService.eliminarSalon(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/area/{idArea}")
+    public ResponseEntity<?> obtenerSalonPorArea(@PathVariable Integer idArea) {
+        List<Salon> salones = salonService.obtenerSalonPorArea(idArea);
+        return ResponseEntity.ok(salones);
+    }
 }

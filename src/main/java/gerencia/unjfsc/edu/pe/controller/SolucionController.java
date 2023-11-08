@@ -40,8 +40,6 @@ public class SolucionController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
-
-
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(rpSolucion.getIdInci());
         incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
         incidenciaService.actualizarIncidencia(incidencia);

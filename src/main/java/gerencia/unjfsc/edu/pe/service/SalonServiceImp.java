@@ -47,4 +47,9 @@ public class SalonServiceImp implements SalonService {
     public void eliminarSalon(Integer idSalon) {
         salonRepository.deleteById(idSalon);
     }
+
+    @Override
+    public List<Salon> obtenerSalonPorArea(Integer idArea) {
+        return salonRepository.findByArea(idArea);
+    }
 }
