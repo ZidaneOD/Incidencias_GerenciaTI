@@ -1,4 +1,4 @@
-package gerencia.unjfsc.edu.pe.domain;
+package gerencia.unjfsc.edu.pe.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +20,6 @@ public class User {
     private String telfPers;
     private String emailPers;
     private String nombRol;
+    private String nombImg;
     private static final long serialVersionUID = 1L;
 }

@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class SolucionController {
 
         Usuario usuario = usuarioService.obtenerUsuarioPorId(rpSolucion.getIdUsua());
 
-        Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario);
+        Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario, new Date());
 
 
         Solucion solucionCreada = solucionService.crearSolucion(solucion);
@@ -78,6 +79,7 @@ public class SolucionController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
+        solucion.setFechaSolu(new Date());
         Solucion solucionActualizado = solucionService.actualizarSolucion(solucion);
         if (solucionActualizado != null) {
             return ResponseEntity.ok(solucionActualizado);
@@ -91,7 +93,7 @@ public class SolucionController {
         Solucion solucion = solucionService.obtenerSolucionPorId(id);
 
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(solucion.getIncidencia().getIdInci());
-        incidencia.setTipoSeguimiento(new TipoSeguimiento(1, "Registrada"));
+        incidencia.setTipoSeguimiento(new TipoSeguimiento(2, "Proceso"));
         incidenciaService.actualizarIncidencia(incidencia);
 
         solucionService.eliminarSolucion(id);

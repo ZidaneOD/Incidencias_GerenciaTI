@@ -1,6 +1,9 @@
 package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.Usuario;
+import gerencia.unjfsc.edu.pe.domain.UsuarioImagen;
+import gerencia.unjfsc.edu.pe.service.FileService;
+import gerencia.unjfsc.edu.pe.service.UsuarioImagenService;
 import gerencia.unjfsc.edu.pe.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -17,6 +20,10 @@ import java.util.stream.Collectors;
 public class LoginController {
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private UsuarioImagenService imagenService;
 
     @PostMapping
     public ResponseEntity<?> login(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) {
@@ -29,8 +36,17 @@ public class LoginController {
             return ResponseEntity.badRequest().body(errores);
         }
         Usuario usuarioBuscado = usuarioService.obtenerCredenciales(usuario.getNombUsua(), usuario.getPassUsua());
+
         if (usuarioBuscado != null) {
-            return ResponseEntity.ok().body(usuarioBuscado);
+            UsuarioImagen img = imagenService.obtenerImgPorId(usuarioBuscado.getIdUsua());
+            if (img != null) {
+                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
+                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
+                return ResponseEntity.ok().body(request);
+            }
+            gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(usuarioBuscado, null);
+            return ResponseEntity.ok().body(request);
+
         } else {
             return ResponseEntity.ok().body("Denegado");
         }

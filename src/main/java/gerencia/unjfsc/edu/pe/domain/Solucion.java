@@ -1,10 +1,14 @@
 package gerencia.unjfsc.edu.pe.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,5 +31,16 @@ public class Solucion {
     @ManyToOne
     @JoinColumn(name = "id_usua")
     private Usuario usuario;
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @Column(name = "fecha_solu")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(timezone = "GMT-5:00")
+    private Date fechaSolu;
+
+    @PrePersist
+    public void prePersist() {
+        fechaSolu = new Date();
+    }
+
     private static final long serialVersionUID = 1L;
 }

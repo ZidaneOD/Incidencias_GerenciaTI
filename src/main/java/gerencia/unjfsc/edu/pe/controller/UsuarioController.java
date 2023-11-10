@@ -2,9 +2,8 @@ package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.*;
 import gerencia.unjfsc.edu.pe.report.REUsuario;
-import gerencia.unjfsc.edu.pe.service.PersonaService;
-import gerencia.unjfsc.edu.pe.service.RolService;
-import gerencia.unjfsc.edu.pe.service.UsuarioService;
+import gerencia.unjfsc.edu.pe.request.User;
+import gerencia.unjfsc.edu.pe.service.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -29,6 +28,10 @@ public class UsuarioController {
     private PersonaService personaService;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private UsuarioImagenService usuarioImagenService;
+    @Autowired
+    private FileService fileService;
 
     @PostMapping
     public ResponseEntity<?> crearRol(@Valid @RequestBody User user, BindingResult bindingResult) {
@@ -42,7 +45,7 @@ public class UsuarioController {
         }
         Persona personaCreada = personaService.crearPersona(convertUserToPers(user));
         Usuario usuarioCreado = usuarioService.crearUsuario(convertUserToUsuario(user, personaCreada));
-
+        usuarioImagenService.crearUsuaImg(null, usuarioCreado.getIdUsua(), user.getNombImg());
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
     }
 
@@ -104,7 +107,14 @@ public class UsuarioController {
     public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id) {
         Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
         if (usuario != null) {
-            return ResponseEntity.ok(usuario);
+            UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
+            if (img.getNombImg() != null) {
+                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
+                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
+                return ResponseEntity.ok().body(request);
+            }
+            gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(usuario, null);
+            return ResponseEntity.ok().body(request);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -127,7 +137,10 @@ public class UsuarioController {
         }
         Persona personaActualizada = personaService.actualizarPersona(convertUserToPers(user));
         Usuario usuarioActualizada = usuarioService.actualizarUsuario(convertUserToUsuario(user, personaActualizada));
-
+        //Busca la img por Usuario ID
+        UsuarioImagen usuarioImagenBuscado = usuarioImagenService.obtenerImgPorId(user.getIdUsua());
+        usuarioImagenBuscado.setNombImg(user.getNombImg());
+        usuarioImagenService.actualizarImg(usuarioImagenBuscado);
         if (usuarioActualizada != null) {
             return ResponseEntity.ok(usuarioActualizada);
         } else {
