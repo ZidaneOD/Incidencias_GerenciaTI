@@ -51,8 +51,6 @@ public class UsuarioController {
 
     private Persona convertUserToPers(User user) {
         Rol rolBuscado = rolService.obtenerRolPorNombre(user.getNombRol());
-        List<Rol> list = new ArrayList<>();
-        list.add(rolBuscado);
         Persona pers;
         if (user.getIdUsua() != null) {
             Usuario usuario = usuarioService.obtenerUsuarioPorId(user.getIdUsua());
@@ -64,7 +62,7 @@ public class UsuarioController {
                     user.getDniPers(),
                     user.getTelfPers(),
                     user.getEmailPers(),
-                    list
+                    rolBuscado
             );
 
         } else {
@@ -76,7 +74,7 @@ public class UsuarioController {
                     user.getDniPers(),
                     user.getTelfPers(),
                     user.getEmailPers(),
-                    list
+                    rolBuscado
             );
         }
 
@@ -160,19 +158,15 @@ public class UsuarioController {
         List<REUsuario> reUsuarios = new ArrayList<>();
         for (Usuario usuario : usuarios) {
             String apellidos = usuario.getPersona().getAppaPers() + " " + usuario.getPersona().getApmaPers();
-            List<Rol> rols = usuario.getPersona().getRoles();
-            String roles = null;
-            for (Rol rol : rols) {
-                roles = " " + rol.getNombRol();
+            Rol rols = usuario.getPersona().getRol();
 
-            }
             reUsuarios.add(new REUsuario(usuario.getIdUsua(),
                     usuario.getNombUsua(),
                     usuario.getPersona().getNombPers(),
                     apellidos,
                     usuario.getPersona().getDniPers(),
                     usuario.getPersona().getEmailPers(),
-                    roles));
+                    rols.getNombRol()));
         }
         try {
             java.net.URL file = this.getClass().getClassLoader().getResource("RP_Usuarios.jasper");

@@ -29,12 +29,8 @@ public class Persona {
     private String telfPers;
     @Column(name = "email_pers", length = 200, unique = true)
     private String emailPers;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "tb_pers_roles",
-            joinColumns = @JoinColumn(name = "id_pers"),
-            inverseJoinColumns = @JoinColumn(name = "id_rol")
-    )
-    private List<Rol> roles = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_rol")
+    private Rol rol;
     private static final long serialVersionUID = 1L;
 }
