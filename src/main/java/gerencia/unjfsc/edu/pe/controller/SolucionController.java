@@ -4,7 +4,7 @@ import gerencia.unjfsc.edu.pe.domain.Incidencia;
 import gerencia.unjfsc.edu.pe.domain.Solucion;
 import gerencia.unjfsc.edu.pe.domain.TipoSeguimiento;
 import gerencia.unjfsc.edu.pe.domain.Usuario;
-import gerencia.unjfsc.edu.pe.report.RPSolucion;
+import gerencia.unjfsc.edu.pe.request.SolucionResquest;
 import gerencia.unjfsc.edu.pe.service.IncidenciaService;
 import gerencia.unjfsc.edu.pe.service.SolucionService;
 import gerencia.unjfsc.edu.pe.service.UsuarioService;
@@ -32,7 +32,7 @@ public class SolucionController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<?> crearSolucion(@Valid @RequestBody RPSolucion rpSolucion, BindingResult bindingResult) {
+    public ResponseEntity<?> crearSolucion(@Valid @RequestBody SolucionResquest rpSolucion, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
             List<String> errores = bindingResult.getAllErrors()
@@ -44,14 +44,17 @@ public class SolucionController {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(rpSolucion.getIdInci());
         incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
         incidenciaService.actualizarIncidencia(incidencia);
-
         Usuario usuario = usuarioService.obtenerUsuarioPorId(rpSolucion.getIdUsua());
 
-        Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario, new Date());
+        if (solucionService.obtenerSolucionPorIncidencia(incidencia) != null) {
+            return ResponseEntity.status(HttpStatus.OK).body("YA EXISTE");
+        }
 
-
+        Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario, null);
         Solucion solucionCreada = solucionService.crearSolucion(solucion);
         return ResponseEntity.status(HttpStatus.CREATED).body(solucionCreada);
+
+
     }
 
     @GetMapping(value = "/{id}")

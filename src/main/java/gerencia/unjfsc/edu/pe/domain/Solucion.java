@@ -36,7 +36,6 @@ public class Solucion {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(timezone = "GMT-5:00")
     private Date fechaSolu;
-
     @PrePersist
     public void prePersist() {
         fechaSolu = new Date();

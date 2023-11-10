@@ -1,5 +1,6 @@
 package gerencia.unjfsc.edu.pe.service;
 
+import gerencia.unjfsc.edu.pe.domain.Incidencia;
 import gerencia.unjfsc.edu.pe.domain.Solucion;
 import gerencia.unjfsc.edu.pe.repository.SolucionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,16 @@ public class SolucionServiceImp implements SolucionService {
     @Transactional(readOnly = true)
     public Solucion obtenerSolucionPorId(Integer idSolu) {
         return solucionRepository.findById(idSolu).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Solucion obtenerSolucionPorIncidencia(Incidencia incidencia) {
+        Solucion buscada = solucionRepository.findByIncidencia(incidencia);
+        if (buscada != null) {
+            return buscada;
+        }
+        return null;
     }
 
     @Override
