@@ -108,7 +108,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
         if (usuario != null) {
             UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
-            if (img.getNombImg() != null) {
+            if (img != null) {
                 byte[] imgByte = fileService.dowloadFile(img.getNombImg());
                 gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
                 return ResponseEntity.ok().body(request);
