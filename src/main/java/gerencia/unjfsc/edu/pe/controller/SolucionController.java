@@ -42,19 +42,15 @@ public class SolucionController {
             return ResponseEntity.badRequest().body(errores);
         }
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(rpSolucion.getIdInci());
-        incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
-        incidenciaService.actualizarIncidencia(incidencia);
-        Usuario usuario = usuarioService.obtenerUsuarioPorId(rpSolucion.getIdUsua());
-
         if (solucionService.obtenerSolucionPorIncidencia(incidencia) != null) {
             return ResponseEntity.status(HttpStatus.OK).body("YA EXISTE");
         }
-
+        incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
+        Usuario usuario = usuarioService.obtenerUsuarioPorId(rpSolucion.getIdUsua());
         Solucion solucion = new Solucion(null, incidencia, rpSolucion.getDescSolu(), rpSolucion.getCostoSolu(), usuario, null);
         Solucion solucionCreada = solucionService.crearSolucion(solucion);
+        incidenciaService.actualizarIncidencia(incidencia);
         return ResponseEntity.status(HttpStatus.CREATED).body(solucionCreada);
-
-
     }
 
     @GetMapping(value = "/{id}")
