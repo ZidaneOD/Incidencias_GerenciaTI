@@ -51,7 +51,11 @@ public class IncidenciaController {
     @GetMapping(value = "{id}")
     public ResponseEntity<?> obtenerIncidencia(@PathVariable Integer id) {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
-        incidencia.setTipoSeguimiento(new TipoSeguimiento(2,"Proceso"));
+        if (incidencia.getTipoSeguimiento().getNombTipoSegui() == "Resuelto") {
+            incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
+        } else {
+            incidencia.setTipoSeguimiento(new TipoSeguimiento(2, "Proceso"));
+        }
         incidenciaService.actualizarIncidencia(incidencia);
         if (incidencia != null) {
             return ResponseEntity.ok(incidencia);
