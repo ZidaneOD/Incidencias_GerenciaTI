@@ -69,6 +69,11 @@ public class IncidenciaController {
         List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
         return ResponseEntity.ok(incidencias);
     }
+    @GetMapping(value = "/buscar/{search}")
+    public ResponseEntity<List<Incidencia>> bucarObtenerTodasLasIncidencias(@PathVariable String search) {
+        List<Incidencia> incidencias = incidenciaService.busIncidencias(search);
+        return ResponseEntity.ok(incidencias);
+    }
 
     @PutMapping
     public ResponseEntity<?> actualizarIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {

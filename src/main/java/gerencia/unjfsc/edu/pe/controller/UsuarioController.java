@@ -34,7 +34,7 @@ public class UsuarioController {
     private FileService fileService;
 
     @PostMapping
-    public ResponseEntity<?> crearRol(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
             List<String> errores = bindingResult.getAllErrors()
@@ -119,9 +119,22 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
+    public ResponseEntity<List<gerencia.unjfsc.edu.pe.response.UsuarioImagen>> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
-        return ResponseEntity.ok(usuarios);
+        List<gerencia.unjfsc.edu.pe.response.UsuarioImagen> usuarioImagens = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
+            if (img != null) {
+                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
+                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
+                usuarioImagens.add(request);
+            } else {
+                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(usuario, null);
+                usuarioImagens.add(request);
+            }
+        }
+        return ResponseEntity.ok(usuarioImagens);
     }
 
     @PutMapping

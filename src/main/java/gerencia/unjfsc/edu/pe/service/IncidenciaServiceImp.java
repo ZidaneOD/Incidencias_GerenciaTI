@@ -42,4 +42,11 @@ public class IncidenciaServiceImp implements IncidenciaService {
     public void eliminarIncidencia(Integer idInci) {
         incidenciaRepository.deleteById(idInci);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Incidencia> busIncidencias(String buscar) {
+        buscar='%'+buscar+'%';
+        return incidenciaRepository.BuscarIncidencia(buscar,buscar,buscar,buscar,buscar,buscar,buscar,buscar);
+    }
 }
