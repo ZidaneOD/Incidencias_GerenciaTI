@@ -64,15 +64,15 @@ public class IncidenciaController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<Incidencia>> obtenerTodasLasIncidencias() {
-        List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
-        return ResponseEntity.ok(incidencias);
-    }
-    @GetMapping(value = "/buscar/{search}")
+    @GetMapping(value = "/{search}")
     public ResponseEntity<List<Incidencia>> bucarObtenerTodasLasIncidencias(@PathVariable String search) {
-        List<Incidencia> incidencias = incidenciaService.busIncidencias(search);
-        return ResponseEntity.ok(incidencias);
+        if (search != null) {
+            List<Incidencia> incidencias = incidenciaService.busIncidencias(search);
+            return ResponseEntity.ok(incidencias);
+        } else {
+            List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
+            return ResponseEntity.ok(incidencias);
+        }
     }
 
     @PutMapping
