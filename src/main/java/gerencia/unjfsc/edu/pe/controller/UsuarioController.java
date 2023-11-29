@@ -3,6 +3,7 @@ package gerencia.unjfsc.edu.pe.controller;
 import gerencia.unjfsc.edu.pe.domain.*;
 import gerencia.unjfsc.edu.pe.report.REUsuario;
 import gerencia.unjfsc.edu.pe.request.User;
+import gerencia.unjfsc.edu.pe.response.UsuarioImagenResponse;
 import gerencia.unjfsc.edu.pe.service.*;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -108,10 +109,10 @@ public class UsuarioController {
             UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
             if (img != null) {
                 byte[] imgByte = fileService.dowloadFile(img.getNombImg());
-                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
+                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), imgByte);
                 return ResponseEntity.ok().body(request);
             }
-            gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(usuario, null);
+            UsuarioImagenResponse request = new UsuarioImagenResponse(usuario, null);
             return ResponseEntity.ok().body(request);
         } else {
             return ResponseEntity.notFound().build();
@@ -119,22 +120,22 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<gerencia.unjfsc.edu.pe.response.UsuarioImagen>> obtenerTodosLosUsuarios() {
+    public ResponseEntity<List<UsuarioImagenResponse>> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
-        List<gerencia.unjfsc.edu.pe.response.UsuarioImagen> usuarioImagens = new ArrayList<>();
+        List<UsuarioImagenResponse> usuarioImagenResponses = new ArrayList<>();
 
         for (Usuario usuario : usuarios) {
             UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
             if (img != null) {
                 byte[] imgByte = fileService.dowloadFile(img.getNombImg());
-                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(img.getUsuario(), imgByte);
-                usuarioImagens.add(request);
+                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), imgByte);
+                usuarioImagenResponses.add(request);
             } else {
-                gerencia.unjfsc.edu.pe.response.UsuarioImagen request = new gerencia.unjfsc.edu.pe.response.UsuarioImagen(usuario, null);
-                usuarioImagens.add(request);
+                UsuarioImagenResponse request = new UsuarioImagenResponse(usuario, null);
+                usuarioImagenResponses.add(request);
             }
         }
-        return ResponseEntity.ok(usuarioImagens);
+        return ResponseEntity.ok(usuarioImagenResponses);
     }
 
     @PutMapping

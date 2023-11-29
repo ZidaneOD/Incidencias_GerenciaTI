@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioImagen {
+public class UsuarioImagenResponse {
     private Usuario usuario;
     private byte[] img;
 }

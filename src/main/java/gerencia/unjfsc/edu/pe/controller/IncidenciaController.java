@@ -1,6 +1,7 @@
 package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.*;
+import gerencia.unjfsc.edu.pe.response.IncidenciaResponse;
 import gerencia.unjfsc.edu.pe.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -9,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,8 @@ public class IncidenciaController {
     private TipoIncidenciaService tipoIncidenciaService;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private SolucionService solucionService;
 
     @PostMapping
     public ResponseEntity<?> crearIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {
@@ -48,8 +52,8 @@ public class IncidenciaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(incidenciaCreada);
     }
 
-    @GetMapping(value = "{id}")
-    public ResponseEntity<?> obtenerIncidencia(@PathVariable Integer id) {
+    @GetMapping
+    public ResponseEntity<?> obtenerIncidencia(@RequestParam Integer id) {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
         if (incidencia.getTipoSeguimiento().getNombTipoSegui().equals("Resuelto")) {
             incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
@@ -65,13 +69,47 @@ public class IncidenciaController {
     }
 
     @GetMapping(value = "/{search}")
-    public ResponseEntity<List<Incidencia>> bucarObtenerTodasLasIncidencias(@PathVariable String search) {
+    public ResponseEntity<List<IncidenciaResponse>> bucarObtenerTodasLasIncidencias(@PathVariable String search) {
+        List<IncidenciaResponse> incidenciaResponses = new ArrayList<>();
+        int milisecondsByDay = 86400000;
         if (search != null) {
             List<Incidencia> incidencias = incidenciaService.busIncidencias(search);
-            return ResponseEntity.ok(incidencias);
+            for (Incidencia inci : incidencias) {
+                Solucion solucion = solucionService.obtenerSolucionPorIncidencia(inci);
+                if (solucion != null) {
+                    int dias = (int) ((solucion.getFechaSolu().getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
+                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
+                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    incidenciaResponses.add(response);
+                } else {
+                    // La fecha actual
+                    Date fechaactual = new Date(System.currentTimeMillis());
+                    int dias = (int) ((fechaactual.getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
+                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
+                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    incidenciaResponses.add(response);
+                }
+            }
+            return ResponseEntity.ok(incidenciaResponses);
         } else {
             List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
-            return ResponseEntity.ok(incidencias);
+            for (Incidencia inci : incidencias) {
+                Solucion solucion = solucionService.obtenerSolucionPorIncidencia(inci);
+                if (solucion != null) {
+                    int dias = (int) ((solucion.getFechaSolu().getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
+                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
+                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    incidenciaResponses.add(response);
+                } else {
+                    // La fecha actual
+                    Date fechaactual = new Date(System.currentTimeMillis());
+                    int dias = (int) ((fechaactual.getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
+                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
+                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    incidenciaResponses.add(response);
+                }
+            }
+            return ResponseEntity.ok(incidenciaResponses);
         }
     }
 
