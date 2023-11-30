@@ -19,7 +19,7 @@ public class SalonController {
     @Autowired
     private SalonService salonService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearSalon(@Valid @RequestBody Salon salon, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -33,7 +33,7 @@ public class SalonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(salonCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerSalon(@PathVariable Integer id) {
         Salon salon = salonService.obtenerSalonPorId(id);
         if (salon != null) {
@@ -43,13 +43,13 @@ public class SalonController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<Salon>> obtenerTodosLosSalones() {
         List<Salon> salones = salonService.obtenerTodosLosSalones();
         return ResponseEntity.ok(salones);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarSalon(@Valid @RequestBody Salon salon, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -66,13 +66,13 @@ public class SalonController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarSalon(@PathVariable Integer id) {
         salonService.eliminarSalon(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/area/{idArea}")
+    @GetMapping(value = "/area/{idArea}", produces = "application/json")
     public ResponseEntity<?> obtenerSalonPorArea(@PathVariable Integer idArea) {
         List<Salon> salones = salonService.obtenerSalonPorArea(idArea);
         return ResponseEntity.ok(salones);

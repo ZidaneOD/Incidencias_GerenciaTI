@@ -31,7 +31,7 @@ public class SolucionController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearSolucion(@Valid @RequestBody SolucionResquest rpSolucion, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -53,7 +53,7 @@ public class SolucionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(solucionCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}",produces = "application/json")
     public ResponseEntity<?> obtenerSolucion(@PathVariable Integer id) {
         Solucion solucion = solucionService.obtenerSolucionPorId(id);
         if (solucion != null) {
@@ -63,13 +63,13 @@ public class SolucionController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<Solucion>> obtenerTodasLasSoluciones() {
         List<Solucion> soluciones = solucionService.obtenerTodasLasSoluciones();
         return ResponseEntity.ok(soluciones);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarSolucion(@Valid @RequestBody Solucion solucion, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -87,7 +87,7 @@ public class SolucionController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}",produces = "application/json")
     public ResponseEntity<Void> eliminarSolucion(@PathVariable Integer id) {
         Solucion solucion = solucionService.obtenerSolucionPorId(id);
 

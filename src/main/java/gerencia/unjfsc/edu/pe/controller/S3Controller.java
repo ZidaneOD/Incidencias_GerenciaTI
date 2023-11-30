@@ -17,12 +17,12 @@ public class S3Controller {
     @Autowired
     private FileServiceImp fileServiceImp;
 
-    @PostMapping("upload")
+    @PostMapping(value = "upload", produces = "application/json")
     public String upload(@RequestParam("file") MultipartFile file) {
         return fileServiceImp.saveFile(file);
     }
 
-    @GetMapping("download/{filename}")
+    @GetMapping(value = "download/{filename}", produces = "application/json")
     public ResponseEntity<byte[]> download(@PathVariable("filename") String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", MediaType.ALL_VALUE);
@@ -32,15 +32,13 @@ public class S3Controller {
     }
 
 
-    @DeleteMapping("{filename}")
+    @DeleteMapping(value = "{filename}", produces = "application/json")
     public String deleteFile(@PathVariable("filename") String filename) {
         return fileServiceImp.deleteFile(filename);
     }
 
-    @GetMapping("list")
+    @GetMapping(value = "list", produces = "application/json")
     public List<String> getAllFiles() {
-
         return fileServiceImp.listAllFiles();
-
     }
 }

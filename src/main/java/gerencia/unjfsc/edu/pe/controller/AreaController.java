@@ -19,7 +19,7 @@ public class AreaController {
     @Autowired
     private AreaService areaService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearArea(@Valid @RequestBody Area area, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -33,7 +33,7 @@ public class AreaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(areaCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerArea(@PathVariable Integer id) {
         Area area = areaService.obtenerPorId(id);
         if (area != null) {
@@ -43,13 +43,13 @@ public class AreaController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<Area>> obtenerTodosLasAreas() {
         List<Area> areas = areaService.obtenerTodasLasAreas();
         return ResponseEntity.ok(areas);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarArea(@Valid @RequestBody Area area, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -67,7 +67,7 @@ public class AreaController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarArea(@PathVariable Integer id) {
         areaService.eliminarArea(id);
         return ResponseEntity.noContent().build();

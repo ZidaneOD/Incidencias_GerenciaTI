@@ -34,7 +34,7 @@ public class UsuarioController {
     @Autowired
     private FileService fileService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearUsuario(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -102,7 +102,7 @@ public class UsuarioController {
         return usuario;
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id) {
         Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
         if (usuario != null) {
@@ -119,7 +119,7 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<UsuarioImagenResponse>> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
         List<UsuarioImagenResponse> usuarioImagenResponses = new ArrayList<>();
@@ -138,7 +138,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioImagenResponses);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarUsuario(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -160,7 +160,7 @@ public class UsuarioController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Integer id) {
         personaService.eliminarPersona(usuarioService.obtenerUsuarioPorId(id).getPersona().getIdPers());
         return ResponseEntity.noContent().build();

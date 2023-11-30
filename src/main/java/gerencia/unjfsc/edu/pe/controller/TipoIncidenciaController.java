@@ -19,7 +19,7 @@ public class TipoIncidenciaController {
     @Autowired
     private TipoIncidenciaService tipoIncidenciaService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearTipoIncidencia(@Valid @RequestBody TipoIncidencia tipoIncidencia, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -33,7 +33,7 @@ public class TipoIncidenciaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tipoIncidenciaCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerTipoIncidencia(@PathVariable Integer id) {
         TipoIncidencia tipoIncidencia = tipoIncidenciaService.obtenerTipoIncidenciaPorId(id);
         if (tipoIncidencia != null) {
@@ -43,13 +43,13 @@ public class TipoIncidenciaController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<TipoIncidencia>> obtenerTodosLosTipoIncidencias() {
         List<TipoIncidencia> tipoIncidencias = tipoIncidenciaService.obtenerTodosLosTiposIncidencias();
         return ResponseEntity.ok(tipoIncidencias);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarTipoIncidencia(@Valid @RequestBody TipoIncidencia tipoIncidencia, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -66,7 +66,7 @@ public class TipoIncidenciaController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarTipoIncidencia(@PathVariable Integer id) {
         tipoIncidenciaService.eliminarTipoIncidencia(id);
         return ResponseEntity.noContent().build();

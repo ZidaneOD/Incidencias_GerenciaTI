@@ -19,7 +19,7 @@ public class TipoSeguimientoController {
     @Autowired
     private TipoSeguimientoService tipoSeguimientoService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearTipoSeguimiento(@Valid @RequestBody TipoSeguimiento tipoSeguimiento, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -33,7 +33,7 @@ public class TipoSeguimientoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tipoSeguimientoCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}",produces = "application/json")
     public ResponseEntity<?> obtenerTipoSeguimiento(@PathVariable Integer id) {
         TipoSeguimiento tipoSeguimiento = tipoSeguimientoService.obtenerTipoSeguimientoPorId(id);
         if (tipoSeguimiento != null) {
@@ -43,13 +43,13 @@ public class TipoSeguimientoController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<TipoSeguimiento>> obtenerTodosLosTipoSeguimientos() {
         List<TipoSeguimiento> tipoSeguimientos = tipoSeguimientoService.obtenerTodosLosTiposSeguimientos();
         return ResponseEntity.ok(tipoSeguimientos);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarTipoSeguimiento(@Valid @RequestBody TipoSeguimiento tipoSeguimiento, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -66,7 +66,7 @@ public class TipoSeguimientoController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}",produces = "application/json")
     public ResponseEntity<Void> eliminarTipoSeguimiento(@PathVariable Integer id) {
         tipoSeguimientoService.eliminarTipoSeguimiento(id);
         return ResponseEntity.noContent().build();

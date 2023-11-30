@@ -26,7 +26,7 @@ public class LoginController {
     @Autowired
     private UsuarioImagenService imagenService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> login(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos

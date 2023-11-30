@@ -20,7 +20,7 @@ public class RolController {
     @Autowired
     private RolService rolService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearRol(@Valid @RequestBody Rol rol, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -34,7 +34,7 @@ public class RolController {
         return ResponseEntity.status(HttpStatus.CREATED).body(rolCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerRol(@PathVariable Integer id) {
 
         Rol rol = rolService.obtenerRolPorId(id);
@@ -45,13 +45,13 @@ public class RolController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<Rol>> obtenerTodosLosRoles() {
         List<Rol> roles = rolService.obtenerTodosLosRoles();
         return ResponseEntity.ok(roles);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarRol(@Valid @RequestBody Rol rol, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -68,7 +68,7 @@ public class RolController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}",produces = "application/json")
     public ResponseEntity<Void> eliminarRol(@PathVariable Integer id) {
         rolService.eliminarRol(id);
         return ResponseEntity.noContent().build();

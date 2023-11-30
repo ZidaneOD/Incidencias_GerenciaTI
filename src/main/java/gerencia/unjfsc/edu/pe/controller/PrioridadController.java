@@ -19,7 +19,7 @@ public class PrioridadController {
     @Autowired
     private PrioridadService prioridadService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearPrioridad(@Valid @RequestBody Prioridad prioridad, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -33,7 +33,7 @@ public class PrioridadController {
         return ResponseEntity.status(HttpStatus.CREATED).body(prioridadCreada);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obtenerPrioridad(@PathVariable Integer id) {
         Prioridad prioridad = prioridadService.obtenerPrioridadPorId(id);
         if (prioridad != null) {
@@ -43,13 +43,13 @@ public class PrioridadController {
         }
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<List<Prioridad>> obtenerTodosLasPrioridades() {
         List<Prioridad> prioridades = prioridadService.obtnerTodasLasPrioridades();
         return ResponseEntity.ok(prioridades);
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarPrioridad(@Valid @RequestBody Prioridad prioridad, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -66,7 +66,7 @@ public class PrioridadController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarPrioridad(@PathVariable Integer id) {
         prioridadService.eliminarPrioridad(id);
         return ResponseEntity.noContent().build();

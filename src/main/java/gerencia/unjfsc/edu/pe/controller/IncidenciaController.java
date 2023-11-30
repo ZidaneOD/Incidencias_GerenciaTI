@@ -29,7 +29,7 @@ public class IncidenciaController {
     @Autowired
     private SolucionService solucionService;
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
@@ -52,7 +52,7 @@ public class IncidenciaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(incidenciaCreada);
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     public ResponseEntity<?> obtenerIncidencia(@RequestParam Integer id) {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
         if (incidencia.getTipoSeguimiento().getNombTipoSegui().equals("Resuelto")) {
@@ -68,7 +68,7 @@ public class IncidenciaController {
         }
     }
 
-    @GetMapping(value = "/{content}")
+    @GetMapping(value = "/{content}", produces = "application/json")
     public ResponseEntity<List<IncidenciaResponse>> bucarObtenerTodasLasIncidencias(@PathVariable String content, @RequestParam Boolean search) {
         List<IncidenciaResponse> incidenciaResponses = new ArrayList<>();
         int milisecondsByDay = 86400000;
@@ -118,7 +118,7 @@ public class IncidenciaController {
         }
     }
 
-    @PutMapping
+    @PutMapping(produces = "application/json")
     public ResponseEntity<?> actualizarIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
@@ -144,7 +144,7 @@ public class IncidenciaController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> eliminarIncidencia(@PathVariable Integer id) {
         incidenciaService.eliminarIncidencia(id);
         return ResponseEntity.noContent().build();
