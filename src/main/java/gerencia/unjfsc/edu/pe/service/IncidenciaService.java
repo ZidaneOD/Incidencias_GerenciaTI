@@ -14,5 +14,9 @@ public interface IncidenciaService {
     Incidencia actualizarIncidencia(Incidencia incidencia);
 
     void eliminarIncidencia(Integer idInci);
+
     List<Incidencia> busIncidencias(String buscar);
+
+    List<Object[]> cantidadxTipoSegui();
+    List<Object[]> cantidadxTipoInci();
 }

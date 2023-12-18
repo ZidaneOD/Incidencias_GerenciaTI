@@ -1,18 +1,23 @@
 package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.*;
+import gerencia.unjfsc.edu.pe.response.CantidadSeguimientoResponse;
+import gerencia.unjfsc.edu.pe.response.CantidadTipoResponse;
 import gerencia.unjfsc.edu.pe.response.IncidenciaResponse;
 import gerencia.unjfsc.edu.pe.service.*;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,6 +60,7 @@ public class IncidenciaController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> obtenerIncidencia(@RequestParam Integer id) {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
+        int milisecondsByDay = 86400000;
         if (incidencia.getTipoSeguimiento().getNombTipoSegui().equals("Resuelto")) {
             incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
         } else {
@@ -62,7 +68,20 @@ public class IncidenciaController {
         }
         incidenciaService.actualizarIncidencia(incidencia);
         if (incidencia != null) {
-            return ResponseEntity.ok(incidencia);
+            Solucion solucion = solucionService.obtenerSolucionPorIncidencia(incidencia);
+            IncidenciaResponse response;
+            if (solucion != null) {
+                int dias = (int) ((solucion.getFechaSolu().getTime() - incidencia.getFechaInci().getTime()) / milisecondsByDay);
+                int diasFaltantes = incidencia.getTipoIncidencia().getDiasTipoInci() - dias;
+                response = new IncidenciaResponse(incidencia, diasFaltantes, dias);
+            } else {
+                // La fecha actual
+                Date fechaactual = new Date(System.currentTimeMillis());
+                int dias = (int) ((fechaactual.getTime() - incidencia.getFechaInci().getTime()) / milisecondsByDay);
+                int diasFaltantes = incidencia.getTipoIncidencia().getDiasTipoInci() - dias;
+                response = new IncidenciaResponse(incidencia, diasFaltantes, dias);
+            }
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -149,4 +168,84 @@ public class IncidenciaController {
         incidenciaService.eliminarIncidencia(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/reporte/seeguimiento", produces = "application/json")
+    public ResponseEntity<?> cantidadSeguimiento() {
+        List<Object[]> total = incidenciaService.cantidadxTipoSegui();
+        List<CantidadSeguimientoResponse> cantidadResponseList = new ArrayList<>();
+        int i = 1;
+        for (Object[] entry : total) {
+            CantidadSeguimientoResponse response = new CantidadSeguimientoResponse(i, entry[0] + "", Long.parseLong(entry[1] + ""));
+            cantidadResponseList.add(response);
+            i++;
+        }
+        return ResponseEntity.ok(cantidadResponseList);
+
+    }
+
+    @GetMapping(value = "/reporte/tipo", produces = "application/json")
+    public ResponseEntity<?> cantidadTipo() {
+        List<Object[]> total = incidenciaService.cantidadxTipoInci();
+        List<CantidadTipoResponse> cantidadTipoResponses = new ArrayList<>();
+        int i = 1;
+        for (Object[] entry : total) {
+            CantidadTipoResponse response = new CantidadTipoResponse(i, entry[0] + "", Long.parseLong(entry[1] + ""));
+            cantidadTipoResponses.add(response);
+            i++;
+        }
+        return ResponseEntity.ok(cantidadTipoResponses);
+
+    }
+
+    @GetMapping("/reporte")
+    public ResponseEntity<?> exportInvoice() {
+        List<Object[]> totalSegui = incidenciaService.cantidadxTipoSegui();
+        List<CantidadSeguimientoResponse> cantidadResponseList = new ArrayList<>();
+        int i = 1, i_1 = 1;
+        for (Object[] entry : totalSegui) {
+            CantidadSeguimientoResponse response = new CantidadSeguimientoResponse(i++, entry[0] + "", Long.parseLong(entry[1] + ""));
+            cantidadResponseList.add(response);
+        }
+        List<Object[]> totalInci = incidenciaService.cantidadxTipoInci();
+        List<CantidadTipoResponse> cantidadTipoResponses = new ArrayList<>();
+        for (Object[] entry : totalInci) {
+            CantidadTipoResponse response = new CantidadTipoResponse(i_1++, entry[0] + "", Long.parseLong(entry[1] + ""));
+            cantidadTipoResponses.add(response);
+        }
+
+        try {
+            java.net.URL file = this.getClass().getClassLoader().getResource("RP_Incidencias.jasper");
+            java.net.URL filelogo = this.getClass().getClassLoader().getResource("images/logoIndacochea.jpg");
+            java.net.URL fileSpring = this.getClass().getClassLoader().getResource("images/logoSpring.png");
+
+            final JasperReport report = (JasperReport) JRLoader.loadObject(file);
+
+            java.io.InputStream IndacocheastreamForImage = filelogo.openStream();
+            java.io.InputStream SpringstreamForImage = fileSpring.openStream();
+
+            final HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("logoEmpresa", IndacocheastreamForImage);
+            parameters.put("logoSpring", SpringstreamForImage);
+            parameters.put("dsSegui", new JRBeanCollectionDataSource(cantidadResponseList));
+            parameters.put("dsTipo", new JRBeanCollectionDataSource(cantidadTipoResponses));
+
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            byte[] reporte = JasperExportManager.exportReportToPdf(jasperPrint);
+            String sdf = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
+            StringBuilder stringBuilder = new StringBuilder().append("ReportePDF:");
+            ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                    .filename(stringBuilder.append(cantidadResponseList.size())
+                            .append("generateDate:").append(sdf).append(".pdf").toString())
+                    .build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDisposition(contentDisposition);
+            return ResponseEntity.ok().contentLength((long) reporte.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .headers(headers).body(new ByteArrayResource(reporte));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.noContent().build();
+    }
+
 }

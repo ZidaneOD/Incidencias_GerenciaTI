@@ -46,7 +46,19 @@ public class IncidenciaServiceImp implements IncidenciaService {
     @Override
     @Transactional(readOnly = true)
     public List<Incidencia> busIncidencias(String buscar) {
-        buscar='%'+buscar+'%';
-        return incidenciaRepository.BuscarIncidencia(buscar,buscar,buscar,buscar,buscar,buscar,buscar,buscar);
+        buscar = '%' + buscar + '%';
+        return incidenciaRepository.BuscarIncidencia(buscar, buscar, buscar, buscar, buscar, buscar, buscar, buscar);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Object[]> cantidadxTipoSegui() {
+        return incidenciaRepository.CantidadSeguimientos();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Object[]> cantidadxTipoInci() {
+        return incidenciaRepository.CantidadTipoIncidencia();
     }
 }
