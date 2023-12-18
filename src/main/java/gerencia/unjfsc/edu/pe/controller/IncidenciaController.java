@@ -169,7 +169,7 @@ public class IncidenciaController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/reporte/seeguimiento", produces = "application/json")
+    @GetMapping(value = "/reporte/seguimiento", produces = "application/json")
     public ResponseEntity<?> cantidadSeguimiento() {
         List<Object[]> total = incidenciaService.cantidadxTipoSegui();
         List<CantidadSeguimientoResponse> cantidadResponseList = new ArrayList<>();
