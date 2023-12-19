@@ -9,13 +9,18 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +38,14 @@ public class IncidenciaController {
     private UsuarioService usuarioService;
     @Autowired
     private SolucionService solucionService;
+    @Value("${spring.datasource.driver-class-name}")
+    String driver;
+    @Value("${spring.datasource.url}")
+    String url;
+    @Value("${spring.datasource.username}")
+    String user;
+    @Value("${spring.datasource.password}")
+    String password;
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {
@@ -213,7 +226,14 @@ public class IncidenciaController {
             cantidadTipoResponses.add(response);
         }
 
+
         try {
+
+
+            Connection conn;
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, password);
+
             java.net.URL file = this.getClass().getClassLoader().getResource("RP_Incidencias.jasper");
             java.net.URL filelogo = this.getClass().getClassLoader().getResource("images/logoIndacochea.jpg");
             java.net.URL fileSpring = this.getClass().getClassLoader().getResource("images/logoSpring.png");
@@ -229,7 +249,7 @@ public class IncidenciaController {
             parameters.put("dsSegui", new JRBeanCollectionDataSource(cantidadResponseList));
             parameters.put("dsTipo", new JRBeanCollectionDataSource(cantidadTipoResponses));
 
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, conn);
             byte[] reporte = JasperExportManager.exportReportToPdf(jasperPrint);
             String sdf = (new SimpleDateFormat("dd/MM/yyyy")).format(new Date());
             StringBuilder stringBuilder = new StringBuilder().append("ReportePDF:");
