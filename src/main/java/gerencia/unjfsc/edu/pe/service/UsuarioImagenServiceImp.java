@@ -15,8 +15,8 @@ public class UsuarioImagenServiceImp implements UsuarioImagenService {
 
     @Override
     @Transactional
-    public UsuarioImagen crearUsuaImg(Integer idUsuaImg, Integer idUsua, String nombImg) {
-        UsuarioImagen creado = usuarioImagenRepository.guardar(idUsuaImg, idUsua, nombImg);
+    public UsuarioImagen crearUsuaImg(UsuarioImagen usuarioImagen) {
+        UsuarioImagen creado = usuarioImagenRepository.save(usuarioImagen);
         if (creado != null) {
             return creado;
         }

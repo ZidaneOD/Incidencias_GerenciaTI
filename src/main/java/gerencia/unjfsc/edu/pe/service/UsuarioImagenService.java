@@ -5,7 +5,7 @@ import gerencia.unjfsc.edu.pe.domain.UsuarioImagen;
 import java.util.List;
 
 public interface UsuarioImagenService {
-    UsuarioImagen crearUsuaImg(Integer idUsuaImg, Integer idUsua, String nombImg);
+    UsuarioImagen crearUsuaImg(UsuarioImagen usuarioImagen);
 
     UsuarioImagen obtenerImgPorId(Integer idUsua);
 

@@ -3,7 +3,7 @@ package gerencia.unjfsc.edu.pe.controller;
 import gerencia.unjfsc.edu.pe.domain.Usuario;
 import gerencia.unjfsc.edu.pe.domain.UsuarioImagen;
 import gerencia.unjfsc.edu.pe.response.UsuarioImagenResponse;
-import gerencia.unjfsc.edu.pe.service.FileService;
+import gerencia.unjfsc.edu.pe.service.CloudinaryService;
 import gerencia.unjfsc.edu.pe.service.UsuarioImagenService;
 import gerencia.unjfsc.edu.pe.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,6 @@ public class LoginController {
     @Autowired
     private UsuarioService usuarioService;
     @Autowired
-    private FileService fileService;
-    @Autowired
     private UsuarioImagenService imagenService;
 
     @PostMapping(produces = "application/json")
@@ -40,9 +38,9 @@ public class LoginController {
 
         if (usuarioBuscado != null) {
             UsuarioImagen img = imagenService.obtenerImgPorId(usuarioBuscado.getIdUsua());
+            System.out.println("URL: " + img.getUrlImg());
             if (img != null) {
-                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
-                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), imgByte);
+                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), img);
                 return ResponseEntity.ok().body(request);
             }
             UsuarioImagenResponse request = new UsuarioImagenResponse(usuarioBuscado, null);

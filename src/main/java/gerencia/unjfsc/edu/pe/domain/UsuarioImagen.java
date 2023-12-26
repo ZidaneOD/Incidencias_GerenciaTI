@@ -22,5 +22,9 @@ public class UsuarioImagen {
     private Usuario usuario;
     @Column(name = "nomb_img", length = 200)
     private String nombImg;
+    @Column(name = "url_img", length = 200)
+    private String urlImg;
+    @Column(name = "id_img", length = 200)
+    private String idImg;
     private static final long serialVersionUID = 1L;
 }

@@ -2,7 +2,7 @@ package gerencia.unjfsc.edu.pe.controller;
 
 import gerencia.unjfsc.edu.pe.domain.*;
 import gerencia.unjfsc.edu.pe.report.REUsuario;
-import gerencia.unjfsc.edu.pe.request.User;
+import gerencia.unjfsc.edu.pe.request.UserRequest;
 import gerencia.unjfsc.edu.pe.response.UsuarioImagenResponse;
 import gerencia.unjfsc.edu.pe.service.*;
 import net.sf.jasperreports.engine.*;
@@ -32,10 +32,10 @@ public class UsuarioController {
     @Autowired
     private UsuarioImagenService usuarioImagenService;
     @Autowired
-    private FileService fileService;
+    private CloudinaryService cloudinaryService;
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<?> crearUsuario(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Manejar errores de validación, como campos incorrectos
             List<String> errores = bindingResult.getAllErrors()
@@ -44,37 +44,36 @@ public class UsuarioController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
-        Persona personaCreada = personaService.crearPersona(convertUserToPers(user));
-        Usuario usuarioCreado = usuarioService.crearUsuario(convertUserToUsuario(user, personaCreada));
-        usuarioImagenService.crearUsuaImg(null, usuarioCreado.getIdUsua(), user.getNombImg());
+        Persona personaCreada = personaService.crearPersona(convertUserToPers(userRequest));
+        Usuario usuarioCreado = usuarioService.crearUsuario(convertUserToUsuario(userRequest, personaCreada));
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
     }
 
-    private Persona convertUserToPers(User user) {
-        Rol rolBuscado = rolService.obtenerRolPorNombre(user.getNombRol());
+    private Persona convertUserToPers(UserRequest userRequest) {
+        Rol rolBuscado = rolService.obtenerRolPorNombre(userRequest.getNombRol());
         Persona pers;
-        if (user.getIdUsua() != null) {
-            Usuario usuario = usuarioService.obtenerUsuarioPorId(user.getIdUsua());
+        if (userRequest.getIdUsua() != null) {
+            Usuario usuario = usuarioService.obtenerUsuarioPorId(userRequest.getIdUsua());
             pers = new Persona(
                     usuario.getPersona().getIdPers(),
-                    user.getNombPers(),
-                    user.getAppaPers(),
-                    user.getApmaPers(),
-                    user.getDniPers(),
-                    user.getTelfPers(),
-                    user.getEmailPers(),
+                    userRequest.getNombPers(),
+                    userRequest.getAppaPers(),
+                    userRequest.getApmaPers(),
+                    userRequest.getDniPers(),
+                    userRequest.getTelfPers(),
+                    userRequest.getEmailPers(),
                     rolBuscado
             );
 
         } else {
             pers = new Persona(
                     null,
-                    user.getNombPers(),
-                    user.getAppaPers(),
-                    user.getApmaPers(),
-                    user.getDniPers(),
-                    user.getTelfPers(),
-                    user.getEmailPers(),
+                    userRequest.getNombPers(),
+                    userRequest.getAppaPers(),
+                    userRequest.getApmaPers(),
+                    userRequest.getDniPers(),
+                    userRequest.getTelfPers(),
+                    userRequest.getEmailPers(),
                     rolBuscado
             );
         }
@@ -82,20 +81,20 @@ public class UsuarioController {
         return pers;
     }
 
-    private Usuario convertUserToUsuario(User user, Persona persona) {
+    private Usuario convertUserToUsuario(UserRequest userRequest, Persona persona) {
         Usuario usuario;
-        if (user.getIdUsua() != null) {
+        if (userRequest.getIdUsua() != null) {
             usuario = new Usuario(
-                    user.getIdUsua(),
-                    user.getNombUsua(),
-                    user.getPassUsua(),
+                    userRequest.getIdUsua(),
+                    userRequest.getNombUsua(),
+                    userRequest.getPassUsua(),
                     persona
             );
         } else {
             usuario = new Usuario(
                     null,
-                    user.getNombUsua(),
-                    user.getPassUsua(),
+                    userRequest.getNombUsua(),
+                    userRequest.getPassUsua(),
                     persona
             );
         }
@@ -108,8 +107,7 @@ public class UsuarioController {
         if (usuario != null) {
             UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
             if (img != null) {
-                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
-                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), imgByte);
+                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), img);
                 return ResponseEntity.ok().body(request);
             }
             UsuarioImagenResponse request = new UsuarioImagenResponse(usuario, null);
@@ -127,8 +125,8 @@ public class UsuarioController {
         for (Usuario usuario : usuarios) {
             UsuarioImagen img = usuarioImagenService.obtenerImgPorId(usuario.getIdUsua());
             if (img != null) {
-                byte[] imgByte = fileService.dowloadFile(img.getNombImg());
-                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), imgByte);
+
+                UsuarioImagenResponse request = new UsuarioImagenResponse(img.getUsuario(), img);
                 usuarioImagenResponses.add(request);
             } else {
                 UsuarioImagenResponse request = new UsuarioImagenResponse(usuario, null);
@@ -139,7 +137,7 @@ public class UsuarioController {
     }
 
     @PutMapping(produces = "application/json")
-    public ResponseEntity<?> actualizarUsuario(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> actualizarUsuario(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errores = bindingResult.getAllErrors()
                     .stream()
@@ -147,12 +145,9 @@ public class UsuarioController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errores);
         }
-        Persona personaActualizada = personaService.actualizarPersona(convertUserToPers(user));
-        Usuario usuarioActualizada = usuarioService.actualizarUsuario(convertUserToUsuario(user, personaActualizada));
-        //Busca la img por Usuario ID
-        UsuarioImagen usuarioImagenBuscado = usuarioImagenService.obtenerImgPorId(user.getIdUsua());
-        usuarioImagenBuscado.setNombImg(user.getNombImg());
-        usuarioImagenService.actualizarImg(usuarioImagenBuscado);
+        Persona personaActualizada = personaService.actualizarPersona(convertUserToPers(userRequest));
+        Usuario usuarioActualizada = usuarioService.actualizarUsuario(convertUserToUsuario(userRequest, personaActualizada));
+
         if (usuarioActualizada != null) {
             return ResponseEntity.ok(usuarioActualizada);
         } else {
