@@ -88,7 +88,7 @@ public class ReporteController {
     public ResponseEntity<?> report_incidencias() {
         return reporte("RP_IncidenciasFull.jasper");
     }
-    @GetMapping("/areaxsalon")
+    @GetMapping("/areasalon")
     public ResponseEntity<?> report_areasalon() {
         return reporte("RP_Areas_Salon.jasper");
     }
