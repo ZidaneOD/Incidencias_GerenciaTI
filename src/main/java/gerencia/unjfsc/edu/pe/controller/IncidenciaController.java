@@ -13,15 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +45,11 @@ public class IncidenciaController {
     String user;
     @Value("${spring.datasource.password}")
     String password;
+
+    private Duration tiempoRestante(Date ini, Date fin) {
+        Duration duration = Duration.between(ini.toInstant(), fin.toInstant());
+        return duration;
+    }
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> crearIncidencia(@Valid @RequestBody Incidencia incidencia, BindingResult bindingResult) {
@@ -73,7 +77,6 @@ public class IncidenciaController {
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> obtenerIncidencia(@RequestParam Integer id) {
         Incidencia incidencia = incidenciaService.obtenerIncidenciaPorId(id);
-        int milisecondsByDay = 86400000;
         if (incidencia.getTipoSeguimiento().getNombTipoSegui().equals("Resuelto")) {
             incidencia.setTipoSeguimiento(new TipoSeguimiento(3, "Resuelto"));
         } else {
@@ -84,15 +87,11 @@ public class IncidenciaController {
             Solucion solucion = solucionService.obtenerSolucionPorIncidencia(incidencia);
             IncidenciaResponse response;
             if (solucion != null) {
-                int dias = (int) ((solucion.getFechaSolu().getTime() - incidencia.getFechaInci().getTime()) / milisecondsByDay);
-                int diasFaltantes = incidencia.getTipoIncidencia().getDiasTipoInci() - dias;
-                response = new IncidenciaResponse(incidencia, diasFaltantes, dias);
+                response = new IncidenciaResponse(incidencia, "" + tiempoRestante(incidencia.getFechaInci(), solucion.getFechaSolu()));
             } else {
                 // La fecha actual
                 Date fechaactual = new Date(System.currentTimeMillis());
-                int dias = (int) ((fechaactual.getTime() - incidencia.getFechaInci().getTime()) / milisecondsByDay);
-                int diasFaltantes = incidencia.getTipoIncidencia().getDiasTipoInci() - dias;
-                response = new IncidenciaResponse(incidencia, diasFaltantes, dias);
+                response = new IncidenciaResponse(incidencia, "" + tiempoRestante(incidencia.getFechaInci(), fechaactual));
             }
             return ResponseEntity.ok(response);
         } else {
@@ -103,23 +102,18 @@ public class IncidenciaController {
     @GetMapping(value = "/{content}", produces = "application/json")
     public ResponseEntity<List<IncidenciaResponse>> bucarObtenerTodasLasIncidencias(@PathVariable String content, @RequestParam Boolean search) {
         List<IncidenciaResponse> incidenciaResponses = new ArrayList<>();
-        int milisecondsByDay = 86400000;
         if (search) {
             System.out.println("'NO ES NULL'");
             List<Incidencia> incidencias = incidenciaService.busIncidencias(content);
             for (Incidencia inci : incidencias) {
                 Solucion solucion = solucionService.obtenerSolucionPorIncidencia(inci);
                 if (solucion != null) {
-                    int dias = (int) ((solucion.getFechaSolu().getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
-                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
-                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    IncidenciaResponse response = new IncidenciaResponse(inci, "" + tiempoRestante(inci.getFechaInci(), solucion.getFechaSolu()));
                     incidenciaResponses.add(response);
                 } else {
                     // La fecha actual
                     Date fechaactual = new Date(System.currentTimeMillis());
-                    int dias = (int) ((fechaactual.getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
-                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
-                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
+                    IncidenciaResponse response = new IncidenciaResponse(inci, "" + tiempoRestante(inci.getFechaInci(), fechaactual));
                     incidenciaResponses.add(response);
                 }
             }
@@ -128,21 +122,14 @@ public class IncidenciaController {
             System.out.println("'SI ES NULL'");
             List<Incidencia> incidencias = incidenciaService.obtenerTodasLasIncidencias();
             for (Incidencia inci : incidencias) {
-                System.out.println("'INGRESO AL FOR DEL NULL'");
                 Solucion solucion = solucionService.obtenerSolucionPorIncidencia(inci);
                 if (solucion != null) {
-                    int dias = (int) ((solucion.getFechaSolu().getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
-                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
-                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
-                    System.out.println("'ANNADIO A LA LISTA DONDE HAY SOLUCION'");
+                    IncidenciaResponse response = new IncidenciaResponse(inci, "" + tiempoRestante(inci.getFechaInci(), solucion.getFechaSolu()));
                     incidenciaResponses.add(response);
                 } else {
                     // La fecha actual
                     Date fechaactual = new Date(System.currentTimeMillis());
-                    int dias = (int) ((fechaactual.getTime() - inci.getFechaInci().getTime()) / milisecondsByDay);
-                    int diasFaltantes = inci.getTipoIncidencia().getDiasTipoInci() - dias;
-                    IncidenciaResponse response = new IncidenciaResponse(inci, diasFaltantes, dias);
-                    System.out.println("'ANNADIO A LA LISTA DONDE NO HAY SOLUCION'");
+                    IncidenciaResponse response = new IncidenciaResponse(inci, "" + tiempoRestante(inci.getFechaInci(), fechaactual));
                     incidenciaResponses.add(response);
                 }
             }
@@ -228,8 +215,6 @@ public class IncidenciaController {
 
 
         try {
-
-
             Connection conn;
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, password);

@@ -14,7 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class IncidenciaResponse {
     private Incidencia incidencia;
-    private Integer diasFaltantes;
-    private Integer diasSolucion;
+    private String diasSolucion;
 
 }
