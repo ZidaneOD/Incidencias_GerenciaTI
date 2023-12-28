@@ -173,13 +173,15 @@ public class IncidenciaController {
     public ResponseEntity<?> cantidadSeguimiento() {
         List<Object[]> total = incidenciaService.cantidadxTipoSegui();
         List<CantidadSeguimientoResponse> cantidadResponseList = new ArrayList<>();
+        Map<String, CantidadSeguimientoResponse> prueba = new HashMap<>();
         int i = 1;
         for (Object[] entry : total) {
             CantidadSeguimientoResponse response = new CantidadSeguimientoResponse(i, entry[0] + "", Long.parseLong(entry[1] + ""));
             cantidadResponseList.add(response);
             i++;
+            prueba.put(entry[0] + "", response);
         }
-        return ResponseEntity.ok(cantidadResponseList);
+        return ResponseEntity.ok(prueba);
 
     }
 
@@ -187,13 +189,15 @@ public class IncidenciaController {
     public ResponseEntity<?> cantidadTipo() {
         List<Object[]> total = incidenciaService.cantidadxTipoInci();
         List<CantidadTipoResponse> cantidadTipoResponses = new ArrayList<>();
+        Map<String, CantidadTipoResponse> prueba = new HashMap<>();
         int i = 1;
         for (Object[] entry : total) {
             CantidadTipoResponse response = new CantidadTipoResponse(i, entry[0] + "", Long.parseLong(entry[1] + ""));
             cantidadTipoResponses.add(response);
             i++;
+            prueba.put(entry[0] + "", response);
         }
-        return ResponseEntity.ok(cantidadTipoResponses);
+        return ResponseEntity.ok(prueba);
 
     }
 
